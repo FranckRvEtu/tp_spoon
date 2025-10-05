@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Analyse de code - Spoon Metrics</title>
+    <script src="https://cdn.jsdelivr.net/npm/viz.js@2.1.2/viz.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/viz.js@2.1.2/full.render.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        h2 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form {
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        label {
+            margin-top: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        input {
+            padding: 12px;
+            margin-top: 5px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            padding: 12px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .metrics {
+            margin-top: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            max-width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: none;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        tr:hover {
+            background: #e8eaf6;
+        }
+        .callgraph {
+            margin-top: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            max-width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #graph {
+            display: inline-block;
+            border: 2px solid #e0e0e0;
+            padding: 20px;
+            background: #fafafa;
+            max-width: 100%;
+            overflow: auto;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        #graph svg {
+            max-width: 100%;
+            height: auto;
+            min-height: 600px;
+        }
+    </style>
+</head>
+<body>
+<h1>Analyseur de métriques (Spoon)</h1>
+
+<form action="/analyzer/results" method="post">
+    <label for="path">Chemin du projet :</label>
+    <input type="text" id="path" name="path" placeholder="/home/user/mon-projet" required>
+
+    <label for="x">Valeur de X :</label>
+    <input type="number" id="x" name="x" placeholder="Ex: 5" required>
+
+    <button type="submit">Lancer l'analyse</button>
+</form>
+
+<div class="metrics" th:if="${metrics != null}">
+    <h2>Résultats des métriques</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Métrique</th>
+            <th>Valeur</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="entry : ${metrics}">
+            <td th:text="${entry.key}"></td>
+            <td th:text="${entry.value}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="callgraph" th:if="${graph != null}">
+    <h2>Graphe d'appel</h2>
+
+    <div id="graph"></div>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const dotString = /*[[${graph}]]*/ '';
+
+        console.log('DOT string:', dotString);
+
+        const viz = new Viz();
+
+        viz.renderSVGElement(dotString)
+            .then(function(element) {
+                document.getElementById("graph").appendChild(element);
+            })
+            .catch(function(error) {
+                console.error('Erreur lors du rendu du graphe:', error);
+                document.getElementById("graph").innerHTML =
+                    '<p style="color: red;">Erreur lors du rendu du graphe: ' + error + '</p>';
+            });
+        /*]]>*/
+    </script>
+</div>
+
+</body>
+</html>
