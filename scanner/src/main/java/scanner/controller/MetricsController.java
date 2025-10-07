@@ -41,6 +41,7 @@ public class MetricsController {
             model.addAttribute("metrics", metrics);
             String graphStr = service.buildCallGraph(src);
             model.addAttribute("graph", graphStr);
+            //TODO Lancer le calcul de couplage
             return "index";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());

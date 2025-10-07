@@ -97,6 +97,10 @@ public class MetricsCalculator {
         return res;
     }
 
+    public static Map<String, Map<String, Double>> computeCoupling(Map<String, Map<String, Double>> allPairs,int allCall){
+        //TODO
+    }
+
     public static Map<String,Object> compute(MyScanner scanner,int x){
         System.out.println("Calcul en cours...");
         Map<String,Object> metrics = new LinkedHashMap<>();
@@ -137,7 +141,10 @@ public class MetricsCalculator {
         metrics.put("Pour chaque classe, le 10% des méthodes avec le plus de lignes de code",topLocMethodsPerClass(scanner.getLocPerMethodPerClass()));
         //Métrique n°13
         metrics.put("Le plus grand nombre de paramètres qu'une méthode possède",scanner.getMaxParameters());
-        System.err.println("Calcul fini");
+        System.err.println("Calcul du TP1 fini\nDébut du calcul du couplage");
+
+        //TP2 : Couplage
+        //TODO
         return metrics;
     }
 }
