@@ -5,7 +5,7 @@ import spoon.reflect.declaration.CtMethod;
 import java.util.Map;
 import java.util.Set;
 
-public class CallGraphExporter {
+public class GraphExporter {
 
     //Crée la string du graphe au format DOT
     public static String toDot(Map<CtMethod<?>, Set<CtMethod<?>>> callGraph) {
@@ -25,5 +25,25 @@ public class CallGraphExporter {
         //DEBUG System.out.println(sb.toString());
         return sb.toString();
     }
+
+    public static String buildCouplingGraphDot(Map<String, Map<String, Double>> couplingMap) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("digraph CouplingGraph {\n");
+        sb.append("  rankdir=LR;\n");
+        sb.append("  node [shape=box, style=filled, color=lightblue];\n");
+
+        couplingMap.forEach((classA, targets) -> {
+            targets.forEach((classB, weight) -> {
+                if (weight > 0) {
+                    sb.append(String.format("  \"%s\" -> \"%s\" [label=\"%.3f\", penwidth=%.2f];\n",
+                            classA, classB, weight, 1 + weight * 5)); // penwidth pour l'épaisseur
+                }
+            });
+        });
+
+        sb.append("}\n");
+        return sb.toString();
+    }
+
 
 }

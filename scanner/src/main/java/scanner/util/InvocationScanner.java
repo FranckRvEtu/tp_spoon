@@ -11,12 +11,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class CallGraphScanner extends CtScanner {
+public class InvocationScanner extends CtScanner {
 
     private final Map<CtMethod<?>, Set<CtMethod<?>>> callGraph = new HashMap<>();
     // Stocke le nombre d'appel pour chaque couple de Classes au format :
     // {A : { B : 5}, {C : 3}}
-    private final Map<String, Map<String, Integer>> coupling = new HashMap<>();
+    private final Map<String, Map<String, Double>> coupling = new HashMap<>();
     private int totalCall=0;
 
     @Override
@@ -34,7 +34,7 @@ public class CallGraphScanner extends CtScanner {
 
             if (callerClass != null && targetClass != null) {
                 if(!callerClass.equals(targetClass)) {
-                    coupling.computeIfAbsent(callerClass, k -> new HashMap<>()).merge(targetClass, 1, Integer::sum);
+                    coupling.computeIfAbsent(callerClass, k -> new HashMap<>()).merge(targetClass, 1.0, Double::sum);
                 }
             }
         }
@@ -50,7 +50,7 @@ public class CallGraphScanner extends CtScanner {
         return totalCall;
     }
 
-    public Map<String, Map<String, Integer>> getCoupling() {
+    public Map<String, Map<String, Double>> getCoupling() {
         return coupling;
     }
 }

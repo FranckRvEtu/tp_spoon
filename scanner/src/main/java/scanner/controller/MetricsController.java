@@ -2,18 +2,12 @@ package scanner.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import scanner.service.MetricsService;
-import scanner.util.CallGraphExporter;
-import scanner.util.MyScanner;
 import org.springframework.web.bind.annotation.*;
-import spoon.reflect.declaration.CtMethod;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 
 @Controller
@@ -41,7 +35,12 @@ public class MetricsController {
             model.addAttribute("metrics", metrics);
             String graphStr = service.buildCallGraph(src);
             model.addAttribute("graph", graphStr);
-            //TODO Lancer le calcul de couplage
+            //Calcul du couplage
+            Map<String, Map<String, Double>> couplings = service.getCouplings(src);
+            model.addAttribute("couplings", couplings );
+            //Mise en graphe du couplage
+            String couplingGraph = service.buildCallGraph(src);
+            model.addAttribute("couplingGraph", couplingGraph);
             return "index";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());

@@ -1,14 +1,13 @@
 package scanner.service;
 
 import org.springframework.stereotype.Service;
-import scanner.util.CallGraphExporter;
-import scanner.util.CallGraphScanner;
+import scanner.util.GraphExporter;
+import scanner.util.InvocationScanner;
 import scanner.util.MetricsCalculator;
 import scanner.util.MyScanner;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
 
 import java.util.*;
 
@@ -51,13 +50,28 @@ public class MetricsService {
     }
 
     public String buildCallGraph(String path) {
-        System.out.println("Création du graphe");
+        System.out.println("Création du graphe d'appel de méthod");
         CtModel model = getNewModel(path);
-        CallGraphScanner scanner = new CallGraphScanner();
+        InvocationScanner scanner = new InvocationScanner();
         model.getRootPackage().accept(scanner);
         Map<CtMethod<?>, Set<CtMethod<?>>> graph = scanner.getCallGraph();
-        return CallGraphExporter.toDot(graph);
+        return GraphExporter.toDot(graph);
     }
 
-    //TODO
+    public Map<String, Map<String, Double>> getCouplings(String path){
+        System.out.println("Calcul du couplage");
+        CtModel model = getNewModel(path);
+        InvocationScanner scanner = new InvocationScanner();
+        model.getRootPackage().accept(scanner);
+        return MetricsCalculator.computeCoupling(scanner.getCoupling(), scanner.getTotalCall());
+    }
+
+    public String getCouplingGraph(String path) {
+        System.out.println("Crétion du graphe de couplage pondéré");
+        CtModel model = getNewModel(path);
+        InvocationScanner scanner = new InvocationScanner();
+        model.getRootPackage().accept(scanner);
+        Map<String, Map<String, Double>> coupling = scanner.getCoupling();
+        return GraphExporter.buildCouplingGraphDot(coupling);
+    }
 }

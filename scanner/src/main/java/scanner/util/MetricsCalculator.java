@@ -98,10 +98,23 @@ public class MetricsCalculator {
     }
 
     public static Map<String, Map<String, Double>> computeCoupling(Map<String, Map<String, Double>> allPairs,int allCall){
-        //TODO
+        //TO TEST
+        Map<String, Map<String, Double>> res = new HashMap<>();
+
+        if (allCall==0) return allPairs;
+
+       allPairs.forEach((classA, aRelations)->{
+           Map<String, Double> pairsRes = new HashMap<>();
+           aRelations.forEach((classB, calls)->{
+               double ratio = calls/allCall;
+               pairsRes.put(classB,ratio);
+           });
+           res.put(classA, pairsRes);
+       });
+       return res;
     }
 
-    public static Map<String,Object> compute(MyScanner scanner,int x){
+    public static Map<String,Object> compute(MyScanner scanner, int x){
         System.out.println("Calcul en cours...");
         Map<String,Object> metrics = new LinkedHashMap<>();
         //Pour éviter le boilerplate
@@ -143,8 +156,6 @@ public class MetricsCalculator {
         metrics.put("Le plus grand nombre de paramètres qu'une méthode possède",scanner.getMaxParameters());
         System.err.println("Calcul du TP1 fini\nDébut du calcul du couplage");
 
-        //TP2 : Couplage
-        //TODO
         return metrics;
     }
 }
