@@ -11,16 +11,13 @@ import spoon.reflect.declaration.CtMethod;
 
 import java.util.*;
 
+import static scanner.util.ModelGetter.getNewModel;
+
 @Service
 public class MetricsService {
 
     //Méthode pour éviter le boilerplate entre les deux autres méthodes
-    private CtModel getNewModel(String path){
-        Launcher launcher = new Launcher();
-        launcher.addInputResource(path);
-        launcher.buildModel();
-        return launcher.getModel();
-    }
+
 
     //Analyse le projets
     public Map<String, Object> analyzeProjects(String path, int x){
@@ -58,20 +55,4 @@ public class MetricsService {
         return GraphExporter.toDot(graph);
     }
 
-    public Map<String, Map<String, Double>> getCouplings(String path){
-        System.out.println("Calcul du couplage");
-        CtModel model = getNewModel(path);
-        InvocationScanner scanner = new InvocationScanner();
-        model.getRootPackage().accept(scanner);
-        return MetricsCalculator.computeCoupling(scanner.getCoupling(), scanner.getTotalCall());
-    }
-
-    public String getCouplingGraph(String path) {
-        System.out.println("Crétion du graphe de couplage pondéré");
-        CtModel model = getNewModel(path);
-        InvocationScanner scanner = new InvocationScanner();
-        model.getRootPackage().accept(scanner);
-        Map<String, Map<String, Double>> coupling = scanner.getCoupling();
-        return GraphExporter.buildCouplingGraphDot(coupling);
-    }
 }

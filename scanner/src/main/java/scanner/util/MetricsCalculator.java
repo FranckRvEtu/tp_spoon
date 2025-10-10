@@ -99,12 +99,13 @@ public class MetricsCalculator {
 
     public static Map<String, Map<String, Double>> computeCoupling(Map<String, Map<String, Double>> allPairs,int allCall){
         //TO TEST
-        Map<String, Map<String, Double>> res = new HashMap<>();
+        System.err.println("Compute Coupling :\nAllcall = "+allCall+"\nAllPairs = "+allPairs);
+        Map<String, Map<String, Double>> res = new LinkedHashMap<>();
 
         if (allCall==0) return allPairs;
 
        allPairs.forEach((classA, aRelations)->{
-           Map<String, Double> pairsRes = new HashMap<>();
+           Map<String, Double> pairsRes = new LinkedHashMap<>();
            aRelations.forEach((classB, calls)->{
                double ratio = calls/allCall;
                pairsRes.put(classB,ratio);

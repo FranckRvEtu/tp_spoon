@@ -115,7 +115,7 @@
             margin-left: auto;
             margin-right: auto;
         }
-        #graph {
+        #callGraph, #couplingGraph {
             display: inline-block;
             border: 2px solid #e0e0e0;
             padding: 20px;
@@ -125,10 +125,28 @@
             border-radius: 8px;
             margin-top: 20px;
         }
-        #graph svg {
+        #callGraph svg, #couplingGraph svg {
             max-width: 100%;
             height: auto;
             min-height: 600px;
+        }
+        .matrix-table {
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+
+        .matrix-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .matrix-table td.highlight {
+            background-color: #ffeb3b; /* jaune clair */
+            font-weight: bold;
+            color: #333;
         }
     </style>
 </head>
@@ -163,10 +181,36 @@
     </table>
 </div>
 
+<div class="metrics" th:if="${matrix != null}">
+    <h2>Matrice de couplage</h2>
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+            <tr>
+                <th></th>
+                <th th:each="col : ${cols}" th:text="${col}"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="row : ${rows}">
+                <th th:text="${row}" style="text-align: left;"></th>
+                <td th:each="col : ${cols}"
+                    th:text="${#numbers.formatDecimal(matrix.get(row).get(col) != null ? matrix.get(row).get(col) : 0.0, 1, 5)}">
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
 <div class="callgraph" th:if="${graph != null}">
     <h2>Graphe d'appel</h2>
 
-    <div id="graph"></div>
+    <div id="callGraph"></div>
     <script th:inline="javascript">
         /*<![CDATA[*/
         const dotString = /*[[${graph}]]*/ '';
@@ -177,16 +221,42 @@
 
         viz.renderSVGElement(dotString)
             .then(function(element) {
-                document.getElementById("graph").appendChild(element);
+                document.getElementById("callGraph").appendChild(element);
             })
             .catch(function(error) {
                 console.error('Erreur lors du rendu du graphe:', error);
-                document.getElementById("graph").innerHTML =
+                document.getElementById("callGraph").innerHTML =
                     '<p style="color: red;">Erreur lors du rendu du graphe: ' + error + '</p>';
             });
         /*]]>*/
     </script>
 </div>
+
+<div class="callgraph" th:if="${couplingGraph != null}">
+    <h2>Graphe de couplage</h2>
+
+    <div id="couplingGraph"></div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const couplingDotString = /*[(${couplingGraph})]*/ '';
+        console.log('DOT:', couplingDotString);
+
+        const vizCoupling = new Viz();
+        vizCoupling.renderSVGElement(couplingDotString)
+            .then(function(element) {
+                document.getElementById("couplingGraph").appendChild(element);
+            })
+            .catch(function(error) {
+                console.error('Erreur lors du rendu du graphe de couplage:', error);
+                document.getElementById("couplingGraph").innerHTML =
+                    '<p style="color: red;">Erreur lors du rendu du graphe: ' + error + '</p>';
+            });
+        /*]]>*/
+    </script>
+</div>
+
+
 
 </body>
 </html>

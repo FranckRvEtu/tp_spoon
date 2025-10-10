@@ -4,17 +4,21 @@ package scanner.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import scanner.model.CouplingMatrix;
+import scanner.service.CouplingService;
 import scanner.service.MetricsService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.*;
 
 
 @Controller
 public class MetricsController {
 
     @Autowired
-    private MetricsService service;
+    private MetricsService metricsService;
+    @Autowired
+    private CouplingService couplingService;
 
     @GetMapping("/")
     public String index(){
@@ -31,16 +35,23 @@ public class MetricsController {
             if (src == null || src.trim().isEmpty()){
                 throw new IllegalArgumentException("Veuillez fournir un chemin");
             }
-            Map<String,Object> metrics = service.analyzeProjects(src,x);
+            Map<String,Object> metrics = metricsService.analyzeProjects(src,x);
             model.addAttribute("metrics", metrics);
-            String graphStr = service.buildCallGraph(src);
+            String graphStr = metricsService.buildCallGraph(src);
             model.addAttribute("graph", graphStr);
             //Calcul du couplage
-            Map<String, Map<String, Double>> couplings = service.getCouplings(src);
-            model.addAttribute("couplings", couplings );
+            CouplingMatrix matrixObject = couplingService.getCouplingsMatrix(src);
+            //System.err.println(couplings);
+
+            model.addAttribute("rows", matrixObject.getRows());
+            model.addAttribute("cols", matrixObject.getCols());
+            model.addAttribute("matrix", matrixObject.getMatrix());
+
             //Mise en graphe du couplage
-            String couplingGraph = service.buildCallGraph(src);
+            String couplingGraph = couplingService.getCouplingGraph(src);
+            //System.err.println( "Coupling Graph : "+couplingGraph );
             model.addAttribute("couplingGraph", couplingGraph);
+
             return "index";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
@@ -58,4 +69,6 @@ public class MetricsController {
         model.addAttribute("graph", graphStr);
         return "index";
     }*/
+
+
 }

@@ -30,7 +30,8 @@ public class InvocationScanner extends CtScanner {
                     .computeIfAbsent(caller, k -> new HashSet<>())
                     .add(callee);
             String callerClass = caller.getParent(CtClass.class).getSimpleName();
-            String targetClass = caller.getParent(CtClass.class).getSimpleName();
+            String targetClass = target.getParent(CtClass.class).getSimpleName();
+            //System.err.println("Caller = "+callerClass+" -> "+targetClass);
 
             if (callerClass != null && targetClass != null) {
                 if(!callerClass.equals(targetClass)) {
