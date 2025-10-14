@@ -33,26 +33,24 @@ public class CouplingService {
         List<String> rows = new ArrayList<>(couplings.keySet());
 
         // 2) Construire la matrice complète (String formaté à 5 décimales)
-        Map<String, Map<String, String>> matrix = new LinkedHashMap<>();
+        Map<String, Map<String, Double>> matrix = new LinkedHashMap<>();
 
         for (String r : rows) {
-            Map<String, String> rowMap = new LinkedHashMap<>();
+            Map<String, Double> rowMap = new LinkedHashMap<>();
             Map<String, Double> inner = couplings.getOrDefault(r, Collections.emptyMap());
             for (String c : cols) {
                 double v = inner.getOrDefault(c, 0.0);
-                rowMap.put(c, String.format(Locale.US, "%.5f", v));
+                rowMap.put(c, v);
             }
             matrix.put(r, rowMap);
         }
+        CouplingMatrix res = new CouplingMatrix(rows,cols,matrix);
+        System.err.println("Matrice en sorti du service : "+ res.getMatrix().toString());
         return new CouplingMatrix(rows,cols,matrix);
     }
 
-    public String getCouplingGraph(String path) {
+    public String getCouplingGraph(CouplingMatrix matrix) {
         System.out.println("Crétion du graphe de couplage pondéré");
-        CtModel model = getNewModel(path);
-        InvocationScanner scanner = new InvocationScanner();
-        model.getRootPackage().accept(scanner);
-        Map<String, Map<String, Double>> coupling = scanner.getCoupling();
-        return GraphExporter.buildCouplingGraphDot(coupling);
+        return GraphExporter.buildCouplingGraphDot(matrix.getMatrix());
     }
 }

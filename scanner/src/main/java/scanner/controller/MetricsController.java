@@ -39,16 +39,18 @@ public class MetricsController {
             model.addAttribute("metrics", metrics);
             String graphStr = metricsService.buildCallGraph(src);
             model.addAttribute("graph", graphStr);
+
+
             //Calcul du couplage
             CouplingMatrix matrixObject = couplingService.getCouplingsMatrix(src);
-            //System.err.println(couplings);
+            System.err.println("Matrice dans le controller : "+matrixObject.getMatrix().toString());
 
             model.addAttribute("rows", matrixObject.getRows());
             model.addAttribute("cols", matrixObject.getCols());
             model.addAttribute("matrix", matrixObject.getMatrix());
 
             //Mise en graphe du couplage
-            String couplingGraph = couplingService.getCouplingGraph(src);
+            String couplingGraph = couplingService.getCouplingGraph(matrixObject);
             //System.err.println( "Coupling Graph : "+couplingGraph );
             model.addAttribute("couplingGraph", couplingGraph);
 

@@ -37,14 +37,14 @@ public class GraphExporter {
             targets.forEach((classB, weight) -> {
                 if (weight > 0) {
                     sb.append(String.format(Locale.US,
-                            "  \"%s\" -> \"%s\" [label=\"%.3f\"];\n",
+                            "  \"%s\" -> \"%s\" [label=\"\\\"%.6f\\\"\", penwidth=%.2f];\n",
                             classA, classB, weight, 1 + weight * 5));// penwidth pour l'épaisseur
                 }
             });
         });
 
         sb.append("}\n");
-        System.err.println("Coupling Graph = "+sb.toString());
+        //System.err.println("Coupling Graph = "+sb.toString());
         return sb.toString();
     }
 }
