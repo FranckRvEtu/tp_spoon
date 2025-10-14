@@ -114,7 +114,9 @@
             max-width: 90%;
             margin-left: auto;
             margin-right: auto;
+            text-align: center;
         }
+
         #callGraph, #couplingGraph {
             display: inline-block;
             border: 2px solid #e0e0e0;
@@ -215,7 +217,7 @@
         /*<![CDATA[*/
         const dotString = /*[[${graph}]]*/ '';
 
-        console.log('DOT string:', dotString);
+        console.log('Callgraph:', dotString);
 
         const viz = new Viz();
 
@@ -239,7 +241,7 @@
 
     <script th:inline="javascript">
         /*<![CDATA[*/
-        const couplingDotString = /*[(${couplingGraph})]*/ '';
+        const couplingDotString = /*[[${couplingGraph}]]*/ '';
         console.log('DOT:', couplingDotString);
 
         const vizCoupling = new Viz();
