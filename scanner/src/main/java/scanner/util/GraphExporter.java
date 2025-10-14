@@ -29,7 +29,7 @@ public class GraphExporter {
 
     public static String buildCouplingGraphDot(Map<String, Map<String, Double>> couplingMap) {
         StringBuilder sb = new StringBuilder();
-        sb.append("digraph couplingGraph {\n");
+        sb.append("graph couplingGraph {\n");
         sb.append("  rankdir=LR;\n");
         sb.append("  node [shape=box, style=filled, color=lightblue];\n");
 
@@ -37,7 +37,7 @@ public class GraphExporter {
             targets.forEach((classB, weight) -> {
                 if (weight > 0) {
                     sb.append(String.format(Locale.US,
-                            "  \"%s\" -> \"%s\" [label=\"\\\"%.6f\\\"\", penwidth=%.2f];\n",
+                            "  \"%s\" -- \"%s\" [label=\"\\\"%.6f\\\"\", penwidth=%.2f];\n",
                             classA, classB, weight, 1 + weight * 5));// penwidth pour l'épaisseur
                 }
             });
