@@ -47,11 +47,17 @@ public class MetricsService {
     }
 
     public String buildCallGraph(String path) {
-        System.out.println("Création du graphe d'appel de méthod");
+        System.out.println("Création du graphe d'appel de méthode");
         CtModel model = getNewModel(path);
         InvocationScanner scanner = new InvocationScanner();
-        model.getRootPackage().accept(scanner);
+        System.out.println("Milieu de la méthode");
+        try {
+            model.getRootPackage().accept(scanner);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }        System.out.println("AH");
         Map<CtMethod<?>, Set<CtMethod<?>>> graph = scanner.getCallGraph();
+        System.out.println("Fni de la méthode buildCallGraph");
         return GraphExporter.toDot(graph);
     }
 

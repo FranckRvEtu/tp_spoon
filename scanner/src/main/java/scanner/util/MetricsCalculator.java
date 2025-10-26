@@ -137,25 +137,26 @@ public class MetricsCalculator {
         metrics.put("Moyenne de lignes de code par méthode",avgLocPerMethod(scanner.getLocPerMethodPerClass()));
         //Métrique n°7
         metrics.put("Moyenne d'attributs par classe",avgFieldsPerClass(scanner.getFieldsPerClass()));
-        System.out.println("Moitié du calcul fini");
+        //System.out.println("Moitié du calcul fini");
         //Métrique n°8
         Map<String, Integer> topMethodsClasses = topPerClass(scanner.getMethodsPerClass());
-        System.out.println("Métrique 8 calculé...");
+        //System.out.println("Métrique 8 calculé...");
         metrics.put("10% des classes avec le plus de méthodes",topMethodsClasses);
         //Métrique n°9
         Map<String, Integer> topFieldsClasses = topPerClass(scanner.getFieldsPerClass());
-        System.out.println("Métrique 9 calculé...");
+        //System.out.println("Métrique 9 calculé...");
         metrics.put("10% des classes avec le plus d'attributs",topFieldsClasses);
         //Métrique n°10
         metrics.put("Classes appartenant aux deux ensembles précédents",mostMethodsAndFieldsClasses(topMethodsClasses, topFieldsClasses));
-        System.out.println("10eme métrique calculé...");
+        //System.out.println("10eme métrique calculé...");
         //Métrique n°11
         metrics.put("Classes avec plus de X méthodes",moreThanXMethods(scanner.getMethodsPerClass(), x));
         //Métrique n°12
         metrics.put("Pour chaque classe, le 10% des méthodes avec le plus de lignes de code",topLocMethodsPerClass(scanner.getLocPerMethodPerClass()));
         //Métrique n°13
         metrics.put("Le plus grand nombre de paramètres qu'une méthode possède",scanner.getMaxParameters());
-        System.err.println("Calcul du TP1 fini\nDébut du calcul du couplage");
+
+        //System.err.println("Méthode Compute : Calcul du TP1 fini");
 
         return metrics;
     }

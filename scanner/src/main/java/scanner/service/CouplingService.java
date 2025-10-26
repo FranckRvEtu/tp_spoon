@@ -51,19 +51,7 @@ public class CouplingService {
     }
 
     public String getCouplingGraph(CouplingMatrix matrix) {
-        System.out.println("Crétion du graphe de couplage pondéré");
+        //System.out.println("Crétion du graphe de couplage pondéré");
         return GraphExporter.buildCouplingGraphDot(matrix.getMatrix());
-    }
-
-    public Double computeCoupling(Cluster a, Cluster b, Map<String, Map<String, Double>> matrix) {
-        double sum = 0.0;
-        int count = 0;
-        for (String c1 : a.getElements()) {
-            for (String c2 : b.getElements()) {
-                sum += matrix.getOrDefault(c1, Map.of()).getOrDefault(c2, 0.0);
-                count++;
-            }
-        }
-        return count > 0 ? sum / count : 0.0;
     }
 }

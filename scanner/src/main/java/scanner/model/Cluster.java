@@ -26,6 +26,17 @@ public class Cluster {
 
     public Set<String> getElements() { return elements; }
     public double getCoupling() { return coupling; }
+    public boolean isAtomic(){return elements.size() == 1;}
+    public Cluster getLeft() { return left; }
+    public Cluster getRight() { return right; }
+    public String getAtomicClass(){
+        if (isAtomic()) {
+            return elements.iterator().next();
+        }
+        else{
+            throw new IllegalStateException("Cluster is not atomic");
+        }
+    }
 
     @Override
     public String toString() {

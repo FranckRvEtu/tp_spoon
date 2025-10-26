@@ -25,6 +25,11 @@ public class InvocationScanner extends CtScanner {
         CtMethod<?> caller = invocation.getParent(CtMethod.class);
         CtExecutable<?> target = invocation.getExecutable().getDeclaration();
 
+        if (caller == null || target == null) {
+            super.visitCtInvocation(invocation);
+            return;
+        }
+
         if (target instanceof CtMethod<?> callee) {
             callGraph
                     .computeIfAbsent(caller, k -> new HashSet<>())
