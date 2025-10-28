@@ -150,6 +150,32 @@
             font-weight: bold;
             color: #333;
         }
+
+        .modules-container {
+            margin: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .modules-table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .modules-table th, .modules-table td {
+            border: 1px solid #ccc;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        .modules-table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        .modules-table tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
     </style>
 </head>
 <body>
@@ -261,6 +287,40 @@
         /*]]>*/
     </script>
 </div>
+
+<div class="callgraph" th:if="${dendrogramGraph != null}">
+    <h2>Dendrogramme de clustering</h2>
+    <div id="dendrogram"></div>
+    <script th:inline="javascript">
+        const dendroDot = /*[[${dendrogramGraph}]]*/ '';
+        const vizDendro = new Viz();
+        vizDendro.renderSVGElement(dendroDot)
+            .then(element => document.getElementById("dendrogram").appendChild(element))
+            .catch(error => {
+                console.error("Erreur dendrogramme:", error);
+            });
+    </script>
+</div>
+
+<div class="metrics" th:if="${modules != null}">
+    <h2>Modules identifiés</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Classes du module</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="module, iterStat : ${modules}">
+            <td th:text="${iterStat.index + 1}"></td>
+            <td th:text="${#strings.listJoin(module.elements, ', ')}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+
 
 
 

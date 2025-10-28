@@ -10,6 +10,7 @@ import scanner.service.ClusteringService;
 import scanner.service.CouplingService;
 import scanner.service.MetricsService;
 import org.springframework.web.bind.annotation.*;
+import scanner.util.GraphExporter;
 
 import java.util.*;
 
@@ -62,9 +63,14 @@ public class MetricsController {
             model.addAttribute("couplingGraph", couplingGraph);
 
             //Calcul du clustering hiérarchique
-            Cluster cluster = clusteringService.createHierchicalCluster(matrixObject.getMatrix());
-            //System.err.println("Clusters : "+cluster.toString());
+            Cluster rootCluster = clusteringService.createHierchicalCluster(matrixObject.getMatrix());
+            model.addAttribute("rootCluster", rootCluster);
+            String dendrogramDot = GraphExporter.clusterToDot(rootCluster);
+            model.addAttribute("dendrogramGraph", dendrogramDot);
 
+            //Identification des modules
+            List<Cluster> modules = clusteringService.identifyModules(rootCluster,matrixObject.getMatrix(),0.005,(int) metrics.get("Nombre de classes"));
+            model.addAttribute("modules", modules);
             return "index";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());

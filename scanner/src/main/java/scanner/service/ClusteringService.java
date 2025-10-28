@@ -51,7 +51,7 @@ public class ClusteringService {
                 .map(Cluster::new)
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        // debug print
+        //Debug
         //System.out.println("Clusters initialisés (" + clusters.size() + "): " + classnames);
 
         return clusters;
@@ -59,15 +59,18 @@ public class ClusteringService {
 
 
     public Double computeCoupling(Cluster a, Cluster b, Map<String, Map<String, Double>> couplingMatrix) {
+        //Cas de base de la récursion
         if (a.isAtomic() && b.isAtomic()) {
             String classA = a.getAtomicClass();
             String classB = b.getAtomicClass();
             Set<String> rows = couplingMatrix.keySet();
 
+            //Matrice non symétrique donc il faut chercher correctement pour éviter les NPE
             if(rows.contains(classA)){
                 return couplingMatrix.get(classA).get(classB);
             }
             else {
+                //Si a n'est pas une ligne de la matrice, il faut fouiller chaque entrée
                 for (Map.Entry<String, Map<String, Double>> entry : couplingMatrix.entrySet()) {
                     Map<String, Double> row = entry.getValue();
                     if (row.containsKey(classA) && entry.getKey().equals(classB)) {
@@ -75,17 +78,17 @@ public class ClusteringService {
                     }
                 }
             }
-
             return 0.0;
         }
-
+        //Cas récursif sur b
         if (a.isAtomic()) {
             return (computeCoupling(a, b.getLeft(), couplingMatrix) + computeCoupling(a, b.getRight(), couplingMatrix)) / 2.0;
         }
+        //Cas récursif sur a
         if (b.isAtomic()) {
             return (computeCoupling(a.getLeft(), b, couplingMatrix) + computeCoupling(a.getRight(), b, couplingMatrix)) / 2.0;
         }
-
+        //Cas récursif sur a et b
         double sum = computeCoupling(a.getLeft(), b.getLeft(), couplingMatrix);
         sum += computeCoupling(a.getLeft(), b.getRight(), couplingMatrix);
         sum += computeCoupling(a.getRight(), b.getLeft(), couplingMatrix);
@@ -97,14 +100,6 @@ public class ClusteringService {
     public Cluster createHierchicalCluster(Map<String, Map<String, Double>> couplingMatrix) {
         try {
             ArrayList<Cluster> clusters = initClusters(couplingMatrix);
-//            for (String i : couplingMatrix.keySet()) {
-//                Map<String, Double> row = couplingMatrix.get(i);
-//                for (String j : row.keySet()) {
-//                    couplingMatrix.putIfAbsent(j, new HashMap<>());
-//                    couplingMatrix.get(i).putIfAbsent(j, couplingMatrix.get(j).get(i));
-//                }
-//            }
-            //System.out.println("couplingMatrix : " + couplingMatrix);
             while (clusters.size() > 1) {
                 double maxCoupling = -1.0;
                 Cluster bestCluster = null;
@@ -123,6 +118,7 @@ public class ClusteringService {
                 clusters.add(bestCluster);
                 clusters.remove(bestCluster.getLeft());
                 clusters.remove(bestCluster.getRight());
+                //DEBUG
 //                System.out.println("Fin de tour : \n"+
 //                        "\tClusters restants :"+clusters.size()+"\n"+
 //                        "\tMeilleur cluster trouvé :"+ bestCluster +"avec un couplage de "+maxCoupling+"\n"+
@@ -135,4 +131,81 @@ public class ClusteringService {
         }
         return null;
     }
+
+    public List<Cluster> identifyModules(Cluster root, Map<String, Map<String, Double>> matrix, double CP, int totalClasses) {
+        List<Cluster> modules = new ArrayList<>();
+
+        // Compter M = nombre total de classes atomiques
+        //int totalClasses = countAtomic(root);
+        int maxModules = Math.max(1, totalClasses / 2);
+
+        exploreCluster(root, matrix, CP, modules, maxModules);
+
+        return modules;
+    }
+
+    private void exploreCluster(Cluster cluster, Map<String, Map<String, Double>> matrix,
+                                double CP, List<Cluster> modules, int maxModules) {
+        if (modules.size() >= maxModules) return;
+
+        if (cluster.isAtomic()) {
+            modules.add(cluster);
+            return;
+        }
+
+        // On récupère toutes les classes atomiques sous ce cluster
+        List<String> elements = getAllAtomicClasses(cluster);
+        double avgCoupling = computeAverageCoupling(elements, matrix);
+
+        if (avgCoupling >= CP) {
+            modules.add(cluster);
+        } else {
+            // sinon, descente récursive
+            if (cluster.getLeft() != null)
+                exploreCluster(cluster.getLeft(), matrix, CP, modules, maxModules);
+            if (cluster.getRight() != null)
+                exploreCluster(cluster.getRight(), matrix, CP, modules, maxModules);
+        }
+    }
+
+    private List<String> getAllAtomicClasses(Cluster cluster) {
+        List<String> result = new ArrayList<>();
+        collectAtomicClasses(cluster, result);
+        return result;
+    }
+
+    private void collectAtomicClasses(Cluster cluster, List<String> list) {
+        if (cluster == null) return;
+        if (cluster.isAtomic()) {
+            list.add(cluster.getAtomicClass());
+        } else {
+            collectAtomicClasses(cluster.getLeft(), list);
+            collectAtomicClasses(cluster.getRight(), list);
+        }
+    }
+
+    private double computeAverageCoupling(List<String> classes, Map<String, Map<String, Double>> matrix) {
+        if (classes.size() < 2) return 0.0;
+        double sum = 0.0;
+        int count = 0;
+
+        for (int i = 0; i < classes.size(); i++) {
+            for (int j = i + 1; j < classes.size(); j++) {
+                String a = classes.get(i);
+                String b = classes.get(j);
+
+                double value = 0.0;
+                if (matrix.containsKey(a) && matrix.get(a).containsKey(b)) {
+                    value = matrix.get(a).get(b);
+                } else if (matrix.containsKey(b) && matrix.get(b).containsKey(a)) {
+                    value = matrix.get(b).get(a);
+                }
+                sum += value;
+                count++;
+            }
+        }
+        return count > 0 ? sum / count : 0.0;
+    }
+
+
 }
