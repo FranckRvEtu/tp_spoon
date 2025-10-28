@@ -35,6 +35,7 @@ public class MetricsController {
     public String calculateMetrics(
             @RequestParam("path") String src,
             @RequestParam("x") int x,
+            @RequestParam("cp") double cp,
             Model model){
         try{
             if (src == null || src.trim().isEmpty()){
@@ -69,7 +70,7 @@ public class MetricsController {
             model.addAttribute("dendrogramGraph", dendrogramDot);
 
             //Identification des modules
-            List<Cluster> modules = clusteringService.identifyModules(rootCluster,matrixObject.getMatrix(),0.005,(int) metrics.get("Nombre de classes"));
+            List<Cluster> modules = clusteringService.identifyModules(rootCluster,matrixObject.getMatrix(),cp,(int) metrics.get("Nombre de classes"));
             model.addAttribute("modules", modules);
             return "index";
         } catch (IllegalArgumentException e) {
