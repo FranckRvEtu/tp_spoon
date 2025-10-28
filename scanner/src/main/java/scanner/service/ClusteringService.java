@@ -41,7 +41,7 @@ public class ClusteringService {
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
 
-        System.out.println("initClusters : classes uniques trouvées = " + classnames.size());
+        //System.out.println("initClusters : classes uniques trouvées = " + classnames.size());
         if (!probableDuplicates.isEmpty()) {
             System.out.println("Possibles doublons (même nom diff. casse) : " + probableDuplicates);
         }

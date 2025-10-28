@@ -55,7 +55,7 @@ public class MetricsService {
             model.getRootPackage().accept(scanner);
         } catch (Exception e) {
             e.printStackTrace();
-        }        System.out.println("AH");
+        }
         Map<CtMethod<?>, Set<CtMethod<?>>> graph = scanner.getCallGraph();
         System.out.println("Fni de la méthode buildCallGraph");
         return GraphExporter.toDot(graph);

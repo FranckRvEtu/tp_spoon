@@ -16,7 +16,7 @@ import static scanner.util.ModelGetter.getNewModel;
 public class CouplingService {
 
     public CouplingMatrix getCouplingsMatrix(String path){
-        System.out.println("Calcul du couplage");
+        //System.out.println("Calcul du couplage");
         CtModel model = getNewModel(path);
         InvocationScanner scanner = new InvocationScanner();
         model.getRootPackage().accept(scanner);
@@ -33,7 +33,7 @@ public class CouplingService {
         // Pour les lignes on peut choisir l'ordre voulu (ici on prend les appelantes)
         List<String> rows = new ArrayList<>(couplings.keySet());
 
-        // 2) Construire la matrice complète (String formaté à 5 décimales)
+        // Construire la matrice complète (String formaté à 5 décimales)
         Map<String, Map<String, Double>> matrix = new LinkedHashMap<>();
 
         for (String r : rows) {
@@ -46,7 +46,7 @@ public class CouplingService {
             matrix.put(r, rowMap);
         }
         CouplingMatrix res = new CouplingMatrix(rows,cols,matrix);
-        System.err.println("Matrice en sorti du service : "+ res.getMatrix().toString());
+        //System.err.println("Matrice en sorti du service : "+ res.getMatrix().toString());
         return new CouplingMatrix(rows,cols,matrix);
     }
 

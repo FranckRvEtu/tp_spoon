@@ -99,7 +99,7 @@ public class MetricsCalculator {
 
     public static Map<String, Map<String, Double>> computeCoupling(Map<String, Map<String, Double>> allPairs,int allCall){
         //TO TEST
-        System.err.println("Compute Coupling :\nAllcall = "+allCall+"\nAllPairs = "+allPairs);
+        //System.err.println("Compute Coupling :\nAllcall = "+allCall+"\nAllPairs = "+allPairs);
         Map<String, Map<String, Double>> res = new LinkedHashMap<>();
 
         if (allCall==0) return allPairs;
