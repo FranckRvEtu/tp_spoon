@@ -1,2 +1,2 @@
 # tp_spoon
-Dépôt du TP 1 d'HAI913I
+Dépôt des TP 1 & 2 de l'UE HAI913I
